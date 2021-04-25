@@ -1,0 +1,175 @@
+[Revision 43] D.Devant (17/09/18)
+DONE:
+  > Added -gl -gs and -e for goal system
+  
+[Revision 43] D.Devant (25/01/17)
+DONE:
+  > Added ReadMe.txt
+  > Updated PATH_MAX_LEN to 201
+  > Bug fixe in cetris_path()
+  > Updated AI_SPY_MODE
+  > Added 'Q' to quit start menu
+  > Improved time system
+  > Added optimization option for make
+
+[Revision 42] D.Devant (23/01/17)
+DONE:
+  > Minor display change
+  > Added HighSpeed mode with 'H' key when AI is enable
+  > Added empty login checkup
+  > Bug fix in save_stats()
+  > Bug fix in format_score()
+  > Changed >= to > in update_topten()
+TODO:
+  > A good time system (Begun with time_spent in main)
+
+[Revision 40 & 41] A.Trompat (20/01/17)
+DONE:
+  > Validate login modification on Windows OS and linux
+  > Add tips on main menu
+  > Modify Bumpiness multiplying factor to improve AI
+  > Enable multi user for "cetris.conf"
+  > Add speed counter tetri/sec
+  > Fix bug on stats display
+  
+[Revision 39] D.Devant (18/01/17)
+DONE:
+  > Added Top 10 list updater
+  > Remove old stats system
+  > Updated display
+TODO:
+  > Try login modification on Windows OS
+  > Fix speed counter without thread
+  > Add tips on main menu
+  > Enable multi user for "cetris.conf"
+
+[Revision 38] D.Devant (17/01/17)
+DONE:
+  > Added login selection
+  > Added login display
+  > Added Top 10 in conf
+  > Display Top 10
+  > Defined AI's name as Jarvis
+TODO:
+  > Update order of Top 10 list
+
+
+[Revision 37] D.Devant (13/01/17)
+DONE:
+  > Improve code visibility
+  > Removing High Speed version
+
+[Revision 36] D.Devant (13/01/17)
+DONE:
+  > New AI calculator
+    - Remove completes lines
+  > High speed version
+    - Decreased FPS
+    - Speed counter tetri/sec
+    - Externalized render() with thread
+  > Updated sevral function changing game_t to board_t
+
+[Revision 33] D.Devant (11/01/17)
+DONE:
+  > Fixed bug with ESC key which introduces delay after press
+  > Improve code visibility
+
+[Revision 30 & 32] A.Trompat (10/01/17)
+DONE:
+	> Add counter of tetri placed and max tetri placed
+	> Display all next tetri
+	> Add possibility to rotate tetri when it is at the right border
+	> Fix format_score
+	> Fix calculation of number of positions of each tetri by ai
+	
+[Revision 31] D.Devant (10/01/17)
+DONE:
+  > New "Cleaner bonus" when player clear board (+3000pts)
+  > Stop start menu blinking on ssh
+
+[Revision 29] D.Devant (10/01/17)calcultating of number of positions of each tetri
+DONE:
+  > Change file path systeme
+
+[Revision 28] A.Trompat (10/01/17)
+	DONE:
+	> uint32 for score and max score (uint16_t before)
+	> Add log library
+
+[Revision 27] D.Devant (07/01/17)
+DONE:
+  > Added new format for time display
+  > Added log library
+    - Added log messages pretty much everywhere
+    - Logs are send to stderr and cetris.log
+  > Fixed AI issues
+    - Defined branch_t and node_t
+      - A branch is an array of nodes
+      - A branch have stats and a score
+      - Just two things interrest us: max score and the first node of the best branch
+  > Changed "ia" to "ai" everywhere !
+  > Disabled print_debug(): not useful anymore
+TODO:
+  > Find a way to save files not at user position but at the binary position
+  > SegFault on enseirb's server when quit
+  > Show the vision number
+
+[Revision 26] A.Trompat (07/01/17)
+	> Anticipation de n piece par l'IA. Non fonctionnel
+	bug 1 : l'ia fait les calculs mais ne positionne pas la piece au bonne endroit
+	bug 2 : quand l'ia fait ses calculs et que les pieces sorte du board(en hauteur) le jeu ce bloc obbligé de faire CTRL+C
+	
+[Revision 23] D.Devant (20/12/17)
+DONE :
+  > Random choice of incomming_tetri
+  > Init of incomming_tetri
+  > Key to return menu
+  > Add random_fill_board() for mode B
+  > Modif of display
+TODO :
+  > Finish the expand of vision for AI
+
+[Revision 23] D.Devant (20/12/17)
+DONE :
+  > Fix teleportation bug
+  > Change name of tetri in used
+  > Adding key to toggle AI player
+  > Change time base of timeouts
+  > Call callback function
+TODO :
+  > Random choice of incomming_tetri
+
+[Revision 22] D.Devant (17/12/17)
+DONE :
+  > Change drop systeme to add animation with drop_speed
+  > Add debug function: print branch result into file
+  > Fix rotation by AI
+
+[Revision 21] D.Devant && A.Trompat (13/12/17)
+DONE :
+  > Score calculate per branch with constant
+  > Adding x, y and rotate to branch
+  > Adding name for tetri
+  > Adding improve_speed()
+  > Modification for tab of branch
+  > Adding erase_tetri()
+
+[Revision 15] D.Devant (09/12/17)
+DONE :
+  > Come back to the elder file hiearchy
+  > Delete of AI functions not needed anymore
+  > Write of checking functions of AI
+    - Count holes           VERIFIED
+    - Count complete_lines  VERIFIED
+    - Fill col_height tab   VERIFIED
+    - Count aggredate       VERIFIED
+    - Count bumpiness       VERIFIED
+  > Create new function to refresh these variables
+  > Create "#define DEBUG 1" with debug functions
+    - Show col height
+    - Show branch variables
+TODO :
+  > Change tetri in comming queue
+  > Create tree with branch table
+
+

@@ -1,6 +1,3 @@
-doc/*
-.svn
-line.select
 *.o
 Cetris
 cetris.log
