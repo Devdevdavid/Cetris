@@ -26,12 +26,14 @@ bool init_display(struct game_t *game)
   game->display.status =    newwin(5 , 16, 0, 0);
   game->display.topten =    newwin(14 , 34, 0, 0);
   game->display.hotkey =    newwin(4 , 50, 0, 0);
+  game->display.goal_msg =  newwin(TERM_HEIGHT / 2, TERM_WIDTH - TERM_WIDTH / 4, 0, 0);
   
   keypad(game->display.start_win, TRUE);
   keypad(game->display.board, TRUE);
   wtimeout(game->display.start_win, 1);
   wtimeout(game->display.board, 1);
   
+  game->display.is_goal_msg_visible = 0;
   game->display.select = 1;
   if (getlogin() == NULL) {
     strcpy(game->display.login, "UNKNOWN");
@@ -52,12 +54,14 @@ void update_windows_position(struct game_t *game)
   mvwin(game->display.topten,     5, 2 * game->board.w + 19);
   mvwin(game->display.status,    14, 2 * game->board.w + 3);
   mvwin(game->display.hotkey,    19, 2 * game->board.w + 3);
+  mvwin(game->display.goal_msg,  TERM_HEIGHT / 4, TERM_WIDTH / 16);
 }
 
-void clear_display(void)
+void clear_display(struct display_t *display)
 {
   clear();
   refresh();
+  display->is_goal_msg_visible = 0;
 }
 
 void print_start_win(struct display_t *display)
@@ -83,13 +87,12 @@ void print_start_win(struct display_t *display)
 #endif
   
   print_play_menu(display);
-  wrefresh(display->start_win);
 }
 
 void print_play_menu(struct display_t *display)
 {
   char choices[][10] = {"", "PLAY    ", "B MODE  ", "NO WALL ", "QUIT    "};
-  char tips[][24] = {"   Edit your name !    ", " Play in classic mode  ", " Start with difficulty ", "No collision with board", "    Quit cetris :(     "};
+  char tips[][24] = {"   Edit your name !    ", " Play in classic mode  ", " Start with difficulty ", "No collision with board", "    Quit cetris :(   "};
   uint8_t i, xoff = TERM_WIDTH / 2 - 8, yoff = TERM_HEIGHT / 2 - 1;
   char temp_log[LOGIN_LEN] = "";
   
@@ -119,6 +122,9 @@ void print_play_menu(struct display_t *display)
 
 void print_game_win(struct game_t *game)
 {
+  if (game->display.is_goal_msg_visible) {
+	  return;
+  }
   update_windows_position(game);
   print_board(game);
   print_next_tetri(game);
@@ -157,7 +163,6 @@ void print_board(struct game_t *game)
     case TITLE_B_MODE: print_box(display->board, "B mode"); break;
     case TITLE_NO_WALL: print_box(display->board, "No wall mode"); break;
   }
-  wrefresh(display->board);
 }
 
 void print_tetri(struct game_t *game)
@@ -206,7 +211,6 @@ void print_next_tetri(struct game_t *game)
     }
   }
   print_box(display->next_tetri, "Next");
-  wrefresh(display->next_tetri);
 }
 
 void print_stats(struct game_t *game)
@@ -227,7 +231,6 @@ void print_stats(struct game_t *game)
   mvwprintw(display->stats, 7, 2,"Speed:%3dt/s", stats->speed);
 
   print_box(display->stats, "Scoreboards");
-  wrefresh(display->stats);
 }
 
 void print_hotkey(struct display_t *display)
@@ -236,7 +239,6 @@ void print_hotkey(struct display_t *display)
   mvwprintw(display->hotkey, 2, 2,"Q: Quit    < >: Move  UP: Rotate  H: HighSpeed");
 
   print_box(display->hotkey, "Hotkey");
-  wrefresh(display->hotkey);
 }
 
 void print_topten(struct game_t *game)
@@ -253,7 +255,6 @@ void print_topten(struct game_t *game)
   }
   
   print_box(game->display.topten, "Top 10");
-  wrefresh(game->display.topten);
 }
 
 void print_status(struct game_t *game)
@@ -278,11 +279,64 @@ void print_status(struct game_t *game)
   } else {
     werase(display->status);
   }
-  wrefresh(display->status);
+}
+
+void print_goal_msg(struct game_t *game)
+{
+  struct display_t *display = &game->display; // Shortcut
+  int row = 1;
+
+  werase(display->goal_msg);
+  box(display->goal_msg, 0, 0);
+
+  switch (game->goal.event) {
+  case 1:
+	  mvwprintw(display->goal_msg, row++, 1,"$ > cat ./truc_a_faire/etreUnBonParrain/ending.msg");
+	  mvwprintw(display->goal_msg, row++, 1,"Bien jou?&e <INSERT_BIZUTH_NAME> !");
+	  mvwprintw(display->goal_msg, row++, 1,"");
+	  mvwprintw(display->goal_msg, row++, 1,"Tu peux ?&etre fi?&ere de toi !");
+	  mvwprintw(display->goal_msg, row++, 1,"Pour attendre ce score de <INSERT_FINAL_SCORE> points,");
+	  mvwprintw(display->goal_msg, row++, 1,"tu as depens?&e autant d'?&energie qu'un RSI durant une");
+	  mvwprintw(display->goal_msg, row++, 1,"ann?&ee à l'ENSEIRB.");
+	  mvwprintw(display->goal_msg, row++, 1,"");
+	  mvwprintw(display->goal_msg, row++, 1,"Indice: \"The answer to life, the universe and everything\"");
+	  mvwprintw(display->goal_msg, row++, 1,"GCC est ton ami, pas les RSI :)");
+	  display->is_goal_msg_visible = 1;
+	  break;
+  case 2:
+	  mvwprintw(display->goal_msg, row++, 1,"Felicitations Simon !!!");
+	  mvwprintw(display->goal_msg, row++, 1,"");
+	  mvwprintw(display->goal_msg, row++, 1,"je suis fiere de toi !");
+	  mvwprintw(display->goal_msg, row++, 1,"Pour atteindre ce score de 5000 points,");
+	  mvwprintw(display->goal_msg, row++, 1,"tu as depense autant d'energie qu'un RSI durant une");
+	  mvwprintw(display->goal_msg, row++, 1,"annee a l'ENSEIRB.");
+	  mvwprintw(display->goal_msg, row++, 1,"______________________________________");
+	  mvwprintw(display->goal_msg, row++, 1,"Indice: \"02 54 43 48 03\"");
+	  mvwprintw(display->goal_msg, row++, 1,"______________________________________");
+	  mvwprintw(display->goal_msg, row++, 1,"GEII Tours est ton ami, pas les RSI :)");
+	  display->is_goal_msg_visible = 1;
+	  break;
+  default: break;
+  }
+}
+
+void apply_prints(struct game_t *game)
+{
+	struct display_t *display = &game->display; // Shortcut
+
+	wrefresh(display->start_win);
+	wrefresh(display->board);
+	wrefresh(display->next_tetri);
+	wrefresh(display->hotkey);
+	wrefresh(display->stats);
+	wrefresh(display->topten);
+	wrefresh(display->status);
+	if (display->is_goal_msg_visible) {
+		wrefresh(display->goal_msg);
+	}
 }
 
 // Internal Functions
-
 void init_display_color(void)
 {
   if (has_colors() == FALSE) {

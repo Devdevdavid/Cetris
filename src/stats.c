@@ -26,7 +26,12 @@ void set_score(struct game_t *game, uint32_t new_score)
   stats->score = new_score;
   update_topten(game);
   if (stats->score > (stats->level * stats->level * SCORE_PER_LEVEL)) {
-    level_up(stats);
+    level_up(game);
+  }
+  if (game->goal.event > 0) {
+    if ((stats->score >= game->goal.score) && (game->goal.score > 0)) {
+      game->goal.isScoreReached = true;
+    }
   }
 }
 
@@ -35,10 +40,17 @@ void add_score(struct game_t *game, uint16_t points)
   set_score(game, game->stats.score + points * game->stats.multiply);
 }
 
-void level_up(struct stats_t *stats)
+void level_up(struct game_t *game)
 {
+  struct stats_t *stats = &game->stats; // Shortcut
+
   if (stats->level < LEVEL_MAX) {
     ++stats->level;
+    if (game->goal.event > 0) {
+      if ((stats->level >= game->goal.level) && (game->goal.level > 0)) {
+        game->goal.isLevelReached = true;
+      }
+    }
   }
 }
 

@@ -40,26 +40,26 @@ In our last test, he placed 10 millions of tetri in 1 day and 6 hours. (Speed av
 
 + Board has a fixed area of 255 pixels
 + Config file are saved near the binary
-  - Multi-instance of Cetris is possible
+- Multi-instance of Cetris is possible
 + 2500 lines of code
 + Jarvis is not a real Artificial Inteligence
-  - No deep learning, he just tests all possibilities
-  - No optimisation when a branch seems to be a bad idea
+- No deep learning, he just tests all possibilities
+- No optimisation when a branch seems to be a bad idea
 + Mesure working time and sleep '1ms - work_time' to get 1ms period
 
 ## Make's options
 
 + 'make all'
-  - Standard version of Cetris
+- Standard version of Cetris
 + 'make debug'
-  - No change from standard
+- No change from standard
 + 'make spymode'
-  - Enable AI_SPY_MODE to look how AI process tests
+- Enable AI_SPY_MODE to look how AI process tests
 
 ## Build options
 
 + NB_TETRI_COMMING : Number of tetri in the vision (Default 3)
-  - Also the number of tetri which are compute by Jarvis
+- Also the number of tetri which are compute by Jarvis
 + POS_GUIDE_LVL_MAX : Level where guide lines are removed (Default 2)
 + DROP_SPEED : Speed of tetri when they are drop. Faster : 1 (Default 8)
 + AI_SPY_MODE : Force render when AI works (Default Not defined)

@@ -39,7 +39,7 @@ void start(struct game_t *game)
   check_login(&game->display);
   start_timer(&game->timer);
   game->in_game = true;
-  clear_display();
+  clear_display(&game->display);
 }
 
 void stop(struct game_t *game)
@@ -61,15 +61,14 @@ void return_menu(struct game_t *game)
   log_debug("Game aborted by user");
   stop(game);
   game->in_game = false;
-  clear_display();
+  clear_display(&game->display);
 }
 
 void check_user_input(struct game_t *game)
 {
   if (!game->in_game) {
     check_user_input_start(game);
-  }
-  if (game->in_game) {
+  } else {
     check_user_input_game(game);
   }
 }
@@ -122,10 +121,10 @@ void check_user_input_game(struct game_t *game)
     return_menu(game);
   } else if (ch == 'a') {
     add_column_board(game, 0);
-    clear_display();
+    clear_display(&game->display);
   } else if (ch == 'z') {
     remove_column_board(game, game->board.w - 1);
-    clear_display();
+    clear_display(&game->display);
   }
   // Move tetri
   if (!game->pause && !game->ai_brain.enable && !game->tetri_comming[0].is_dropping) {

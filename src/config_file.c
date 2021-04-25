@@ -84,8 +84,9 @@ void get_cetris_path(struct game_t *game, const char * first_arg)
     sprintf(game->cetris_path, "%s", first_arg);
   } else if (first_arg[0] == '.') { // Relative path
     getcwd(game->cetris_path, PATH_MAX_LEN - 1);
-    pos = &first_arg[1];
     sprintf(game->cetris_path, "%s%s", game->cetris_path, &first_arg[1]);
+  } else { // Like a command
+	strcpy(game->cetris_path, "~/Cetris");
   }
   // Remove exec name
   pos = strrchr(game->cetris_path, '/');

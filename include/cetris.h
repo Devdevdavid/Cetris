@@ -9,20 +9,23 @@
 #ifndef CETRIS_H
 #define CETRIS_H
 
-#define VERSION               "v1.6.4 - January 2018 - TOP 10 Version"
+#define VERSION               "v1.7.0 - October 2019 - Marvel Version"
 #define LEVEL_MAX             10
 #define MIN_BOARD_ROW         6
 #define MIN_BOARD_COLUMN      4
-#define NB_TETRI_COMMING      3
+#define NB_TETRI_COMMING      2
 #define DROP_SPEED            8
 #define POS_GUIDE_LVL_MAX     2
 
 #define TERM_WIDTH            80
 #define TERM_HEIGHT           24
-#define BOARD_WIDTH           8
-#define BOARD_HEIGHT          20
-#define BOARD_TABLE_SIZE      255
-#define NODE_MAX_NB           255
+#ifndef BOARD_WIDTH
+	#define BOARD_WIDTH       8
+#endif
+#ifndef BOARD_HEIGHT
+	#define BOARD_HEIGHT      20
+#endif
+#define BOARD_TABLE_SIZE      (BOARD_WIDTH * BOARD_HEIGHT)
 #define PATH_MAX_LEN          201
 #define ALT_BACKSPACE         127
 #define ALT_ENTER             10
@@ -72,6 +75,9 @@
 #define MOVE_NOW              1
 #define LAST_TETRI            NB_TETRI_COMMING - 1
 
+// Data Pipe
+#define MAX_PIPE_NAME_LEN 	  32
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -81,6 +87,9 @@
 #include <string.h>
 #include <time.h>
 #include <pthread.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <errno.h>
 #include "log.h"
 
 struct block_t {
@@ -143,6 +152,8 @@ struct display_t {
   WINDOW *hotkey;
   WINDOW *topten;
   WINDOW *status;
+  WINDOW *goal_msg;
+  uint8_t is_goal_msg_visible;
   uint8_t select;               // Menu selection
   char login[LOGIN_LEN];
 };
@@ -175,6 +186,20 @@ struct ai_brain_t {
   bool high_speed;
 };
 
+struct goal_t {
+	uint8_t event; /* 0: Goal disabled, > 0: Event ID */
+	uint32_t score;
+	bool isScoreReached;
+	uint8_t level;
+	bool isLevelReached;
+};
+
+struct data_pipe_t {
+	char pipeName[MAX_PIPE_NAME_LEN];
+	int fifoFd;
+	uint8_t tableCpy[BOARD_TABLE_SIZE];				/* Copy of board->table with the tetri in it */
+};
+
 struct game_t {
   struct stats_t stats;
   struct timer_t timer;
@@ -183,6 +208,8 @@ struct game_t {
   struct board_t board;
   struct display_t display;
   struct ai_brain_t ai_brain;
+  struct goal_t goal;
+  struct data_pipe_t data_pipe;
   char cetris_path[PATH_MAX_LEN];
   bool pause;
   bool in_game;
@@ -198,6 +225,7 @@ void game_sleep(void);
 void update(struct game_t *);
 void place_tetri(struct game_t *);
 void render(struct game_t *);
+void check_goal(struct game_t *);
 
 /* ====================== *
  *      CONFIG_FILE       *
@@ -220,7 +248,7 @@ void init_stats(struct stats_t *);
 void set_score(struct game_t *, uint32_t new_score);
 void add_tetri_placed(struct stats_t *);
 void add_score(struct game_t *, uint16_t points);
-void level_up(struct stats_t *);
+void level_up(struct game_t *);
 void set_cleaner_bonus(struct game_t *);
 void set_multiply(struct game_t *, uint8_t multiply, uint16_t duration);
 void update_topten(struct game_t *);
@@ -309,7 +337,7 @@ void to_upper(char s[]);
  * ====================== */
 bool init_display(struct game_t *);
 void update_windows_position(struct game_t *);
-void clear_display(void);
+void clear_display(struct display_t *);
 void print_start_win(struct display_t *);
 void print_play_menu(struct display_t *);
 void print_game_win(struct game_t *);
@@ -323,7 +351,8 @@ void print_stats(struct game_t *);
 void print_hotkey(struct display_t *);
 void print_topten(struct game_t *);
 void print_status(struct game_t *);
-void print_debug(struct game_t *);
+void print_goal_msg(struct game_t *);
+void apply_prints(struct game_t *);
 
 // Internal Functions
 void init_display_color(void);
@@ -351,6 +380,13 @@ uint8_t remove_complete_line(struct board_t *);
 void apply_node(struct game_t *, struct node_t *);
 void log_best_score(struct ai_brain_t *);
 void log_ia_boards(struct ai_brain_t *);
+
+/* ====================== *
+ *       DATA_PIPE        *
+ * ====================== */
+int init_data_pipe(struct data_pipe_t *data_pipe);
+int data_pipe_close(struct data_pipe_t *data_pipe);
+int data_pipe_write(struct game_t *game);
 
 #endif /* CETRIS_H */
 
